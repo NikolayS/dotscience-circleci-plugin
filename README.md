@@ -1,5 +1,7 @@
 # Dotscience CircleCI plugin
 
+[![Build Status](https://drone.app.cloud.dotscience.net/api/badges/dotmesh-io/dotscience-circleci-plugin/status.svg)](https://drone.app.cloud.dotscience.net/dotmesh-io/dotscience-circleci-plugin)
+
 This plugin can be used in Dotscience pipeline step to start a new CircleCI job build.
 
 ## Usage
