@@ -33,15 +33,15 @@ func getBaseLogConfig(level zapcore.Level) zapcore.EncoderConfig {
 
 	return zapcore.EncoderConfig{
 		// Keys can be anything except the empty string.
-		TimeKey:  "Time",
+		// TimeKey:  "Time",
 		LevelKey: "Level",
 		NameKey:  "Name",
 		// CallerKey:      "Caller",
 		MessageKey: "Message",
 		// StacktraceKey:  "Stack",
-		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    zapcore.CapitalLevelEncoder,
-		EncodeTime:     timeEncoder,
+		LineEnding:  zapcore.DefaultLineEnding,
+		EncodeLevel: zapcore.CapitalLevelEncoder,
+		// EncodeTime:     timeEncoder,
 		EncodeDuration: zapcore.StringDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
