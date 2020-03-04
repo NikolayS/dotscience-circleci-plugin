@@ -15,6 +15,12 @@ func Load() (Config, error) {
 	}
 
 	err = envconfig.Process("PLUGIN", &config)
+
+	// even if empty - no point in not setting it
+	if config.Host == "" {
+		config.Host = "https://circleci.com"
+	}
+
 	return config, err
 }
 
