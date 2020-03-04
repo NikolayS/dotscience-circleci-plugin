@@ -19,6 +19,17 @@ steps:
   commands:
   - make install
 
+- name: publish-dockerhub
+  pull: default
+  image: plugins/docker
+  settings:
+    auto_tag: true
+    repo: dotscience/dotscience-circleci-plugin
+    password:
+      from_secret: hub_password
+    username:
+      from_secret: hub_username
+
 - name: publish
   pull: default
   image: plugins/docker
