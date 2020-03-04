@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/dotmesh-io/dotscience-circleci-plugin/pkg/config"
+	"go.uber.org/zap"
 )
 
 // Client is a CircleCI API client to start jobs
@@ -20,10 +22,11 @@ type Client interface {
 type CircleCIV1Client struct {
 	cfg        config.Config
 	httpClient *http.Client
+	logger     *zap.Logger
 }
 
 // New - create new instance of the CircleCI APi client
-func New(cfg config.Config, client *http.Client) *CircleCIV1Client {
+func New(logger *zap.Logger, cfg config.Config, client *http.Client) *CircleCIV1Client {
 	if client == nil {
 		client = http.DefaultClient
 	}
@@ -31,6 +34,7 @@ func New(cfg config.Config, client *http.Client) *CircleCIV1Client {
 	return &CircleCIV1Client{
 		cfg:        cfg,
 		httpClient: client,
+		logger:     logger,
 	}
 }
 
@@ -62,15 +66,26 @@ func (c *CircleCIV1Client) TriggerNewJob() error {
 	var req *http.Request
 
 	if c.cfg.Branch != "" {
+
+		url := fmt.Sprintf("%s/api/v1.1/project/%s/%s/%s/tree/%s?circle-token=%s", c.cfg.Host, c.cfg.VCSType, c.cfg.Username, c.cfg.Project, c.cfg.Branch, c.cfg.Token)
+
+		c.logger.Sugar().Infof("calling %s", strings.ReplaceAll(url, c.cfg.Token, "******"))
+
 		req, err = http.NewRequest(http.MethodPost,
 			// https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/tree/:branch?circle-token=:token
-			fmt.Sprintf("%s/api/v1.1/project/%s/%s/%s/tree/%s?circle-token=%s", c.cfg.Host, c.cfg.VCSType, c.cfg.Username, c.cfg.Project, c.cfg.Branch, c.cfg.Token),
+			url,
 			bytes.NewBuffer(bts),
 		)
+
 	} else {
+
+		url := fmt.Sprintf("%s/api/v1.1/project/%s/%s/%s?circle-token=%s", c.cfg.Host, c.cfg.VCSType, c.cfg.Username, c.cfg.Project, c.cfg.Token)
+
+		c.logger.Sugar().Infof("calling %s", strings.ReplaceAll(url, c.cfg.Token, "******"))
+
 		req, err = http.NewRequest(http.MethodPost,
 			// https://circleci.com/api/v1.1/project/:vcs-type/:username/:project?circle-token=:token
-			fmt.Sprintf("%s/api/v1.1/project/%s/%s/%s?circle-token=%s", c.cfg.Host, c.cfg.VCSType, c.cfg.Username, c.cfg.Project, c.cfg.Token),
+			url,
 			bytes.NewBuffer(bts),
 		)
 	}

@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	circleCIClient := client.New(conf, http.DefaultClient)
+	circleCIClient := client.New(log, conf, http.DefaultClient)
 
 	log.With(
 		zap.String("host", conf.Host),
