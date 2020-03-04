@@ -14,7 +14,7 @@ func Load() (Config, error) {
 		// nothing major
 	}
 
-	err = envconfig.Process("", &config)
+	err = envconfig.Process("PLUGIN", &config)
 	return config, err
 }
 
