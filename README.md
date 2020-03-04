@@ -23,3 +23,9 @@ after:
     # your CircleCI project name
     project: dotscience-pipeline-demo
 ```
+
+Then, run the task (assuming you have a `train.py` file there to train your model):
+
+```
+ds run -v -p pipeline-test --upload-path . python train.py
+```
