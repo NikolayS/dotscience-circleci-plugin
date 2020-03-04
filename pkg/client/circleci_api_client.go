@@ -10,19 +10,9 @@ import (
 	"github.com/dotmesh-io/dotscience-circleci-plugin/pkg/config"
 )
 
+// Client is a CircleCI API client to start jobs
 type Client interface {
-	TriggerNewJob()
-}
-
-type TriggerNewJobOpts struct {
-	Username string
-	Token    string
-	Project  string
-	VCSType  string
-
-	Revision        string            // optional
-	Tag             string            // optional
-	BuildParameters map[string]string // optional
+	TriggerNewJob() error
 }
 
 // CircleCIV1Client implements several API calls to start build jobs https://circleci.com/docs/api/#trigger-a-new-job
@@ -30,6 +20,18 @@ type TriggerNewJobOpts struct {
 type CircleCIV1Client struct {
 	cfg        config.Config
 	httpClient *http.Client
+}
+
+// New - create new instance of the CircleCI APi client
+func New(cfg config.Config, client *http.Client) *CircleCIV1Client {
+	if client == nil {
+		client = http.DefaultClient
+	}
+
+	return &CircleCIV1Client{
+		cfg:        cfg,
+		httpClient: client,
+	}
 }
 
 type newJobPayload struct {
@@ -42,9 +44,14 @@ type newJobPayload struct {
 func (c *CircleCIV1Client) TriggerNewJob() error {
 
 	payload := newJobPayload{
-		Tag:             c.cfg.Token,
+		Tag:             c.cfg.Tag,
 		Revision:        c.cfg.Revision,
 		BuildParameters: c.cfg.BuildParameters,
+	}
+
+	// if both are set, leaving only tag
+	if payload.Tag != "" && payload.Revision != "" {
+		payload.Revision = ""
 	}
 
 	bts, err := json.Marshal(&payload)
